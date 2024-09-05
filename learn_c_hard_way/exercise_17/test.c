@@ -80,7 +80,7 @@ void Database_close(struct Connection *conn)
 
 void Database_write(struct Connection *conn)
 {
-    rewind(conn->file);//设置对象
+    rewind(conn->file);//设置文件指针所指结构体的参数，改变读写位置指针位置
 
     int rc = fwrite(conn->db, sizeof(struct Database), 1, conn->file);
     if(rc != 1) die("Failed to write database.");
