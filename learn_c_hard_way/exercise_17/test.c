@@ -23,10 +23,10 @@ struct Connection {
     struct Database *db;
 };
 
-void die(const char *message)
+void die(const char *message)//这个函数干什么的？
 {
     if(errno) {
-        perror(message);
+        perror(message); //输出标准错误。
     } else {
         printf("ERROR: %s\n", message);
     }
@@ -55,11 +55,11 @@ struct Connection *Database_open(const char *filename, char mode)
     if(!conn->db) die("Memory error");
 
     if(mode == 'c') {
-        conn->file = fopen(filename, "w");
+        conn->file = fopen(filename, "w"); //fopen返回的指针是文件的地址吗？
     } else {
         conn->file = fopen(filename, "r+");
 
-        if(conn->file) {
+        if(conn->file) { //用于判断返回的地址是否有效。
             Database_load(conn);
         }
     }
@@ -80,7 +80,7 @@ void Database_close(struct Connection *conn)
 
 void Database_write(struct Connection *conn)
 {
-    rewind(conn->file);
+    rewind(conn->file);//设置对象
 
     int rc = fwrite(conn->db, sizeof(struct Database), 1, conn->file);
     if(rc != 1) die("Failed to write database.");
@@ -108,11 +108,11 @@ void Database_set(struct Connection *conn, int id, const char *name, const char 
 
     addr->set = 1;
     // WARNING: bug, read the "How To Break It" and fix this
-    char *res = strncpy(addr->name, name, MAX_DATA);
+    char *res = strncpy(addr->name, name, MAX_DATA);//复制字符串。
     // demonstrate the strncpy bug
     if(!res) die("Name copy failed");
 
-    res = strncpy(addr->email, email, MAX_DATA);
+    res = strncpy(addr->email, email, MAX_DATA);//复制字符串。
     if(!res) die("Email copy failed");
 }
 
