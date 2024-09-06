@@ -110,6 +110,8 @@ void address_printf(struct address *addr)
 void database_get(struct connect *conn, int id)
 {
         //这里很重要，注意这个取指没？
+        //更简洁写法= conn->db->row + i
+        //这个写法省去了取指符号
         struct address *addr = &conn->db->row[id];
         if(addr->set) address_printf(addr);
         else printf("this id is not set\n");
@@ -127,6 +129,7 @@ void database_list(struct connect *conn)
 
 void database_delete(struct connect* conn, int id)
 {
+        //更简洁写法conn->db->row + i
         struct address *addr = &conn->db->row[id];
         addr->set = 0;
 }
