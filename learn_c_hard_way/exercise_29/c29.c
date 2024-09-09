@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
         //获取库函数
         lib_function func = dlsym(lib, func_torun);
-        check(func, "faild fund function %s:%s", func_torun, dlerror);
+        check(func, "faild fund function %s:%s", func_torun, dlerror());
 
         //使用函数
         int rc;
