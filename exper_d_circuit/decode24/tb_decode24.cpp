@@ -8,29 +8,28 @@
 /*verilator生成波形标准头文件*/
 #include <verilated_vcd_c.h>
 /*由dut文件生成标准.h*/
-#include <Vmux241.h> 
+#include <Vdecode24.h> 
 /*.h
  *特别要求转化到cpp文件的数据类型 
  */
 
-#define MAX_SIM_TIME 200 
-#define VERIF_START_TIME 7
-#define VDUT Vmux241 
+#define MAX_SIM_TIME 50 
+#define VERIF_START_TIME 5
+#define VDUT Vdecode24 
 vluint64_t sim_time = 0;
 vluint64_t posedge_cnt = 0;
 
 /*输入测试向量类*/
 class DutInTx {
-        //例如用unit32_t来初始化32位变量
         public:
-
-
+                uint8_t x;
+                uint8_t en;
 };
 
 /*输出结果向量类*/
 class DutOutTx {
         public:
-
+                uint8_t y;
 };
 
 //scoreboard
@@ -64,8 +63,23 @@ class DutScb {
 		 *02,对于用c++实现的输出与tx，即dut输出作比较
 		 *03,若结果有异，输出错误信息
 		 */
+                if(in->en) {
+                        switch(in->x) {
+                                case 0: 
+                                        if(tx->y != 1) std::cout << "error" << std::endl; break;
+                                case 1:
+                                        if(tx->y != 2) std::cout << "error" << std::endl; break;
+                                case 2: 
+                                        if(tx->y != 4) std::cout << "error" << std::endl; break;
+                                case 3:
+                                        if(tx->y != 8) std::cout << "error" << std::endl; break;
+                                default:
+                                        if(tx->y != 0) std::cout << "error" << std::endl; break;
+                        }
+                }
+                else 
+                        if(tx->y != 0) std::cout <<  "erro" << std::endl;
 
-		
 		// As the transaction items were allocated on the heap, it's important
 		// to free the memory after they have been used
 		delete in;
@@ -79,11 +93,12 @@ DutInTx* rndDutInTx(int sim_time){
 	 *其中posedge_cnt为rst信号有效后开始计数，
 	 *即在rst后，每5个edge产生一个测试向量
 	 */
-	if((sim_time % 1) == 0){
+	if((sim_time % 5) == 0){
 		DutInTx *tx = new DutInTx();
 
 		/*在这里对测试向量加上随机值！*/
-       
+                tx->x = rand() % 4;
+                tx->en = rand() % 2;
 
 		return tx;
 	} else {
@@ -105,7 +120,8 @@ class DutInDrv {
 			if(tx != NULL){
 				
 				/*在这里将测试向量的值传给dut的输入接口！*/
-                   
+                                dut->x = tx->x;
+                                dut->en = tx->en;
 				
 				// Release the memory by deleting the tx item
 				// after it has been consumed
@@ -132,8 +148,9 @@ class DutInMon {
                                 // it with data observed at the interface pins
                                 DutInTx *tx = new DutInTx();
                                 /*将dut输入接口处的值反传给新的tx！*/
-                        
-
+                                tx->x = dut->x;
+                                tx->en = dut->en;
+                                
                                 // then pass the transaction item to the scoreboard
                                 scb->writeIn(tx);
                         }
@@ -158,6 +175,7 @@ class DutOutMon {
                                 // it with result observed at the interface pins
                                 DutOutTx *tx = new DutOutTx();
                                 /*将输出端口的值传给新的tx,注：此处的tx为输出结果向量*/
+                                tx->y = dut->y;
 
                                 // then pass the transaction item to the scoreboard
                                 scb->writeOut(tx);

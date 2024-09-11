@@ -17,7 +17,7 @@
 
 #define MAX_SIM_TIME 200 
 #define VERIF_START_TIME 7
-#define VDUT Valu 
+#define VDUT Valu //此处用于替换基本电路类 
 vluint64_t sim_time = 0;
 vluint64_t posedge_cnt = 0;
 
@@ -43,7 +43,11 @@ class DutOutTx {
 //scoreboard
 class DutScb {
 	private:
-	std::deque<DutInTx*> in_q;
+	std::deque<DutInTx*> in_q; 
+        //此处定义了端口类指针的队列
+        //思考：为什么使用队列，而不直接定义“一个”端口类指针？
+        //我们并不知道在输入向量后第几个时钟周期out_valid会有效，
+        //如果在out_valid有效前有多个输入向量呢？因此我们需要队列。
 
 	public:
 	// Input interface monitor port
@@ -84,6 +88,7 @@ DutInTx* rndDutInTx(int i){
 	/*i参数的传入实参为posedge_cnt，
 	 *其中posedge_cnt为rst信号有效后开始计数，
 	 *即在rst后，每5个edge产生一个测试向量
+         *注意非被5整除周期，返回空指针！
 	 */
 	if((i % 5) == 0){
 		DutInTx *tx = new DutInTx();
@@ -108,6 +113,7 @@ class DutInDrv {
 		void drive(DutInTx *tx){
 			// we always start with in_valid set to 0, and set it to
 			// 1 later only if necessary
+                        // 一定注意，此函数每次时钟为1,均执行，若非有tx，则默认valid=0
 			dut->in_valid = 0;
 
 			// Don't drive anything if a transaction item doesn't exist
@@ -159,6 +165,7 @@ class DutOutMon {
 		}
 
 		void monitor(){
+                        //只要检测到out_valid有效，立即从队列中弹出测试向量开始匹配检查
 			if (dut->out_valid == 1) {
 				// If there is valid data at the output interface,
 				// create a new AluOutTx transaction item and populate
