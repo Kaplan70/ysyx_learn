@@ -8,13 +8,13 @@
 /*verilator生成波形标准头文件*/
 #include <verilated_vcd_c.h>
 /*由dut文件生成标准.h*/
-#include <Vmux241.h> 
+#include <Vnixie_decode47.h> 
 #include "dbg.h"
 
 
 #define MAX_SIM_TIME 200 
 #define VERIF_START_TIME 7
-#define VDUT Vmux241 
+#define VDUT Vnixie_decode47 
 vluint64_t sim_time = 0;
 
 int main(int argc, char** argv){
@@ -32,14 +32,23 @@ int main(int argc, char** argv){
                 /*产生测试向量*/
                 //dut->clk ^= 1;
                 if(sim_time % 5 == 0) {
-
+                        dut->x = rand() % 8;
                 }
 
                 dut->eval();
 
                 /*验证输出数据*/
                 if(sim_time % 5 == 0) {
-
+                        switch(dut->x) {
+                                case 0: check(dut->y == 63, "error:x = %d, y = %d", dut->x, dut->y);
+                                case 1: check(dut->y == 6, "error:x = %d, y = %d", dut->x, dut->y);
+                                case 2: check(dut->y == 91, "error:x = %d, y = %d", dut->x, dut->y);
+                                case 3: check(dut->y == 79, "error:x = %d, y = %d", dut->x, dut->y);
+                                case 4: check(dut->y == 102, "error:x = %d, y = %d", dut->x, dut->y);
+                                case 5: check(dut->y == 109, "error:x = %d, y = %d", dut->x, dut->y);
+                                case 6: check(dut->y == 125, "error:x = %d, y = %d", dut->x, dut->y);
+                                case 7: check(dut->y == 7, "error:x = %d, y = %d", dut->x, dut->y);
+                        }
                 }
 
 

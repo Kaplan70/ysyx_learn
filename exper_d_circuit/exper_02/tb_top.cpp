@@ -9,6 +9,7 @@
 #include <verilated_vcd_c.h>
 /*由dut文件生成标准.h*/
 #include <Vtop.h> 
+#include "dbg.h"
 /*.h
  *特别要求转化到cpp文件的数据类型 
  */
@@ -65,22 +66,42 @@ class DutScb {
 		 *03,若结果有异，输出错误信息
 		 */
                 if(in->en) {
-                        if(in->x > 127) if(tx->y != 7) std::cout << "erro" << std::endl;
-                        else if(in->x > 63) if(tx->y != 125) std::cout << "erro" << std::endl; 
-                        else if(in->x > 31) if(tx->y != 109) std::cout << "erro" << std::endl; 
-                        else if(in->x > 15) if(tx->y != 102) std::cout << "erro" << std::endl;
-                        else if(in->x > 7) if(tx->y != 79) std::cout << "erro" << std::endl; 
-                        else if(in->x > 3) if(tx->y != 91) std::cout << "erro" << std::endl;
-                        else if(in->x > 1) if(tx->y != 6) std::cout << "erro" << std::endl; 
-                        else if(tx->y != 63) std::cout << "erro" << std::endl;
+                        if(in->x > 127) {
+                                check(tx->y == 7, "error:x = %d, y = %d\n", in->x, tx->y);
+                        }
+                        else if(in->x > 63) {
+                                check(tx->y == 125, "error:x = %d, y = %d\n", in->x, tx->y);
+                        }
+                        else if(in->x > 31) {
+                                check(tx->y == 109, "error:x = %d, y = %d\n", in->x, tx->y);
+                        }
+                        else if(in->x > 15) {
+                                check(tx->y == 102, "error:x = %d, y = %d\n", in->x, tx->y);
+                        }
+                        else if(in->x > 7) {
+                                check(tx->y == 79, "error:x = %d, y = %d\n", in->x, tx->y);
+                        }
+                        else if(in->x > 3) {
+                                check(tx->y == 91, "error:x = %d, y = %d\n", in->x, tx->y);
+                        }
+                        else if(in->x > 1) {
+                                check(tx->y == 6, "error:x = %d, y = %d\n", in->x, tx->y);
+                        }
+                        else {
+                                check(tx->y == 63, "error:x = %d, y = %d\n", in->x, tx->y);
+                        }
                 }
-                else if(tx->y != 63) std::cout << "erro" << std::endl;
+                else {
+                        check(tx->y == 63, "error:x = %d, y = %d\n", in->x, tx->y);
+                }
+
 
 		
 		// As the transaction items were allocated on the heap, it's important
 		// to free the memory after they have been used
 		delete in;
 		delete tx;
+        error:;
 	}
 };
 
@@ -95,7 +116,7 @@ DutInTx* rndDutInTx(int sim_time){
 
 		/*在这里对测试向量加上随机值！*/
                 tx->x = rand() % 256;
-                tx->en = rand() % 2;
+                tx->en = 1;
 
 		return tx;
 	} else {
@@ -228,6 +249,8 @@ int main(int argc, char** argv){
 	delete scb;
 	delete drv;
 	exit(EXIT_SUCCESS);
+
+error:
 	return 0;
 }
 

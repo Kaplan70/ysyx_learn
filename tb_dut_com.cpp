@@ -9,6 +9,7 @@
 #include <verilated_vcd_c.h>
 /*由dut文件生成标准.h*/
 #include <Vmux241.h> 
+#include "dbg.h"
 /*.h
  *特别要求转化到cpp文件的数据类型 
  */

@@ -1,4 +1,4 @@
-MODULE=top
+MODULE=nixie_decode47
 UDT_FILE=v
 
 .PHONY:sim
